@@ -10,82 +10,24 @@ source("/home/alber-d005/Documents/bdc_access_key.R")
 source("/home/alber-d005/Documents/samples_mapbiomas/scripts/00_util.R")
 
 csv_dir  <- "/home/alber-d005/Documents/samples_mapbiomas/data/samples/csv"
-out_file <- "/home/alber-d005/Documents/samples_mapbiomas/data/samples.rds"
+out_file <- "/home/alber-d005/Documents/samples_mapbiomas/data/samples/samples"
 
 stopifnot(dir.exists(csv_dir))
 
-lc8_cube <- sits_cube(type        = "BDC",
-                      url         = "http://datacube-005.dpi.inpe.br:8010/stac/",
-                      name        = "cerrado",
-                      bands       = c("BAND1", "BAND2", "BAND3", "BAND4",
-                                      "BAND5", "BAND6", "BAND7", "EVI",
-                                      "NDVI", "FMASK4"),
-                      collection  = "LC8_30_16D_STK-1",
-                      start_date  = "2018-01-01",
-                      end_date    = "2018-12-31")
-
-samples <- do_get_ts(in_dir = csv_dir, 
-                     out_file = out_file,
-                     cube = lc8_cube, 
-                     multicores = 40)
-
-
-
-# Error in mis_val[b] <<- as.numeric(sits_env$config[[sensor]][["missing_value"]][[b]]) : 
-#     replacement has length zero
-# 
-# 11.
-# 
-# .f(.x[[i]], ...)
-# 
-# 10.
-# 
-# purrr::map(., function(b) {
-#     mis_val[b] <<- as.numeric(sits_env$config[[sensor]][["missing_value"]][[b]])
-# })
-# 
-# 9.
-# 
-# bands %>% purrr::map(function(b) {
-#     mis_val[b] <<- as.numeric(sits_env$config[[sensor]][["missing_value"]][[b]])
-# }) at
-# sits_config.R#512
-# 8.
-# 
-# .sits_config_missing_values(cube$sensor, bands) at
-# sits_raster_data.R#283
-# 7.
-# 
-# .sits_raster_data_get_ts(cube = tile, points = csv, bands = bands, 
-#                          cld_band = cld_band, impute_fn = impute_fn) at
-# sits_get_data.R#362
-# 6.
-# 
-# .f(.x, ...)
-# 
-# 5.
-# 
-# slide_common(x = .x, f_call = f_call, ptype = .ptype, env = environment(), 
-#              params = params)
-# 
-# 4.
-# 
-# slide_impl(.x, .f, ..., .before = .before, .after = .after, .step = .step, 
-#            .complete = .complete, .ptype = list(), .constrain = FALSE, 
-#            .atomic = FALSE)
-# 
-# 3.
-# 
-# slider::slide(cube, function(tile) {
-#     ts <- .sits_raster_data_get_ts(cube = tile, points = csv, 
-#                                    bands = bands, cld_band = cld_band, impute_fn = impute_fn)
-#     return(ts) ... at
-#     sits_get_data.R#360
-#     2.
-#     
-#     sits_get_data.csv_raster_cube(cube = cube, file = file) at
-#     sits_get_data.R#116
-#     1.
-#     
-#     sits::sits_get_data(cube = cube, file = file)
-#     
+for (my_year in 2017:2018) {
+    lc8_cube <- sits_cube(type        = "BDC",
+                          url         = "http://datacube-005.dpi.inpe.br:8010/stac/",
+                          name        = "cerrado",
+                          bands       = c("BAND1", "BAND2", "BAND3", "BAND4",
+                                          "BAND5", "BAND6", "BAND7", "EVI",
+                                          "NDVI", "FMASK4"),
+                          collection  = "LC8_30_16D_STK-1",
+                          start_date  = paste0(my_year, "-01-01"),
+                          end_date    = paste0(my_year, "-12-31"))
+    print(sprintf("%s Staring year: %s", Sys.time(), my_year))
+    samples <- do_get_ts(in_dir = paste0(csv_dir, "/", my_year), 
+                         out_file = paste0(out_file, "_", my_year, ".rds"),
+                         cube = lc8_cube, 
+                         multicores = 20)
+    print(sprintf("%s Finished year: %s", Sys.time(), my_year))
+}

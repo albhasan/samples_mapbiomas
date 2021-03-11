@@ -25,14 +25,17 @@ source("./scripts/00_util.R")
 
 #---- Script ----
 
+# The BDC grid will be used to group the sample points.
 grid_sf <- bdc_grid_file %>%
     sf::read_sf() %>%
     dplyr::select(tile_id = id) %>%
     sf::st_transform(crs = 4326) 
 
+# Read samples
 samples_sf <- samples_file %>%
     sf::read_sf()
 
+# Process the samples.
 samples_tb <- samples_sf %>%
     sf::st_transform(crs = 4326) %>%
     sf::st_join(y = grid_sf,
@@ -74,9 +77,14 @@ for(data_tb in group_ls) {
         dplyr::group_split()
     for(batch_tb in batch_ls) {
         file_batch <- unique(batch_tb$batch)
+        out_dir_year <- paste0(out_dir, "/", 
+                               stringr::str_sub(unique(batch_tb$start_date), 
+                                                1, 4))
+        if (!dir.exists(out_dir_year))
+            dir.create(out_dir_year)
         batch_tb %>%
         dplyr::select(-tile_id, -batch) %>%
-        readr::write_csv(file = file.path(out_dir, 
+        readr::write_csv(file = file.path(out_dir_year, 
                                           paste0(
                                           paste("mapbiomas",
                                                 file_tile, 
