@@ -62,20 +62,24 @@ samples_tb <- samples_sf %>%
 # Split data by tile and year.
 group_ls <- samples_tb %>%
     dplyr::group_by(tile_id, start_date) %>%
-    dplyr::arrange(longitude, dplyr::desc(latitude)) %>%
     dplyr::group_split()
 
 # Write CSVs.
 out_dir <- "./data/samples/csv"
-for(data_tb in group_ls) {
+for (data_tb in group_ls) {
     file_tile <- unique(data_tb$tile_id)
     file_start <- unique(data_tb$start_date)
     file_end <- unique(data_tb$end_date)
+    lon_interval <- seq(from = range(data_tb$longitude)[1], 
+                        to   = range(data_tb$longitude)[2],
+                        length.out = 20)
     batch_ls <- data_tb %>%
-        dplyr::mutate(batch = floor(dplyr::row_number() / 200)) %>%
+        dplyr::mutate(batch = findInterval(longitude, vec = lon_interval)) %>%
         dplyr::group_by(batch) %>%
         dplyr::group_split()
-    for(batch_tb in batch_ls) {
+    for (batch_tb in batch_ls) {
+        if (nrow(batch_tb) == 0)
+            next()
         file_batch <- unique(batch_tb$batch)
         out_dir_year <- paste0(out_dir, "/", 
                                stringr::str_sub(unique(batch_tb$start_date), 
@@ -83,15 +87,16 @@ for(data_tb in group_ls) {
         if (!dir.exists(out_dir_year))
             dir.create(out_dir_year)
         batch_tb %>%
-        dplyr::select(-tile_id, -batch) %>%
-        readr::write_csv(file = file.path(out_dir_year, 
-                                          paste0(
-                                          paste("mapbiomas",
-                                                file_tile, 
-                                                file_start, 
-                                                file_end,
-                                                file_batch,
-                                                sep = "_"),
-                                          ".csv")))
+            dplyr::select(-tile_id, -batch) %>%
+            dplyr::arrange(longitude, desc(latitude)) %>%
+            readr::write_csv(file = file.path(out_dir_year, 
+                                              paste0(
+                                                  paste("mapbiomas",
+                                                        file_tile, 
+                                                        file_start, 
+                                                        file_end,
+                                                        file_batch,
+                                                        sep = "_"),
+                                                  ".csv")))
     }
 }

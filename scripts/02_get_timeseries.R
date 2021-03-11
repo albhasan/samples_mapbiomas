@@ -28,6 +28,6 @@ for (my_year in 2017:2018) {
     samples <- do_get_ts(in_dir = paste0(csv_dir, "/", my_year), 
                          out_file = paste0(out_file, "_", my_year, ".rds"),
                          cube = lc8_cube, 
-                         multicores = 20)
+                         multicores = 40)
     print(sprintf("%s Finished year: %s", Sys.time(), my_year))
 }
