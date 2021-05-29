@@ -1,4 +1,4 @@
-.libPaths("/home/alber-d005/R/x86_64-pc-linux-gnu-library/4.0")
+#.libPaths("/home/alber-d005/R/x86_64-pc-linux-gnu-library/4.0")
 #Sys.setenv("SITS_USER_CONFIG_FILE" = "/home/alber-d005/Documents/samples_mapbiomas/config.yml")
 
 library(dplyr)
@@ -6,11 +6,11 @@ library(rstac)
 library(sits)
 library(snow)
 
-source("/home/alber-d005/Documents/bdc_access_key.R")
-source("/home/alber-d005/Documents/samples_mapbiomas/scripts/00_util.R")
+source("/home/alber-d006/Documents/bdc_access_key.R")
+source("/home/alber-d006/Documents/samples_mapbiomas/scripts/00_util.R")
 
-csv_dir  <- "/home/alber-d005/Documents/samples_mapbiomas/data/samples/csv"
-out_file <- "/home/alber-d005/Documents/samples_mapbiomas/data/samples/samples"
+csv_dir  <- "/home/alber-d006/Documents/samples_mapbiomas/data/samples/csv"
+out_file <- "/home/alber-d006/Documents/samples_mapbiomas/data/samples/samples"
 
 stopifnot(dir.exists(csv_dir))
 
