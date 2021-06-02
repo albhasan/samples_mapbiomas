@@ -24,8 +24,8 @@ do_get_ts_local <- function(in_dir, out_file, cube, multicores = 20) {
                                     pattern = "\\.csv$",
                                     full.names = TRUE)
     samples_csv_files <- grep(paste0("mapbiomas_(",
-                              paste(my_tiles, collapse = "|"),
-                              ").*[.]csv$"), 
+                                     paste(my_tiles, collapse = "|"),
+                                     ").*[.]csv$"), 
                               samples_csv_files, 
                               value = TRUE) 
     cl <- snow::makeSOCKcluster(multicores)
@@ -33,13 +33,13 @@ do_get_ts_local <- function(in_dir, out_file, cube, multicores = 20) {
     snow::clusterExport(cl, "cube", envir = environment())
     samples_lst <- .apply_cluster(cl, x = samples_csv_files, 
                                   fun = function(file) {
-        samples_outfile <- paste0(sub("^(.*)\\.csv$", "\\1.rds", file))
-        if (file.exists(samples_outfile))
-            return(samples_outfile)
-            samples <- sits::sits_get_data(cube = cube, file = file)
-        saveRDS(samples, file = samples_outfile)
-        samples_outfile
-    })
+                                      samples_outfile <- paste0(sub("^(.*)\\.csv$", "\\1.rds", file))
+                                      if (file.exists(samples_outfile))
+                                          return(samples_outfile)
+                                      samples <- sits::sits_get_data(cube = cube, file = file)
+                                      saveRDS(samples, file = samples_outfile)
+                                      samples_outfile
+                                  })
     samples <- dplyr::bind_rows(lapply(samples_lst, readRDS))
     saveRDS(samples, file = out_file)
     out_file
