@@ -21,12 +21,12 @@ for (my_year in 2017:2018) {
         warning(sprintf("Year %s was already processed. Skipping...", my_year))
         next()
     }
-    lc8_cube <- sits_cube(type        = "BDC",
+    lc8_cube <- sits_cube(source      = "BDC",
                           url         = "http://datacube-005.dpi.inpe.br:8010/stac/",
                           name        = "cerrado",
-                          bands       = c("BAND1", "BAND2", "BAND3", "BAND4",
-                                          "BAND5", "BAND6", "BAND7", "EVI",
-                                          "NDVI", "FMASK4"),
+                          # bands       = c("BAND1", "BAND2", "BAND3", "BAND4",
+                          #                 "BAND5", "BAND6", "BAND7", "EVI",
+                          #                 "NDVI", "FMASK4"),
                           collection  = "LC8_30_16D_STK-1",
                           start_date  = paste0(my_year, "-01-01"),
                           end_date    = paste0(my_year, "-12-31"))
